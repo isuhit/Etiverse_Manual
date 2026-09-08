@@ -1,0 +1,20 @@
+# 1. Dependency folders (downloaded locally via npm install)
+node_modules/
+
+# 2. Environment variables & secrets
+.env
+.env.local
+.env.production
+
+# 3. Logs & Runtime data
+npm-debug.log*
+logs/
+*.log
+
+# 4. OS-generated files
+.DS_Store
+Thumbs.db
+
+# 5. Build outputs (if using TypeScript or bundlers later)
+dist/
+build/
