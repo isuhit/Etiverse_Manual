@@ -1,15 +1,23 @@
-const express = require("express")
-const app = express()
+const express = require("express");
+const app = express();
+const errorMiddleware = require("./src/middleware/error.middleware");
 
-app.use(express.json())
+app.use(express.json());
+
+//ROUTES
+const authRoutes = require("./src/routes/auth.routes");
+const studentRoutes = require("./src/routes/student.route");
 
 app.get("/health", (req, res) => {
-    res.json({
-        status: "ok",
-        timestamp: new Date().toISOString(),
-        response: "Server is running",
+  console.log(req.headers);
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    response: "Server is running",
+  });
+});
+app.use("/api/v1/students", studentRoutes);
+app.use("/api/v1/auth", authRoutes);
 
-    })
-})
-
-module.exports = app
+app.use(errorMiddleware);
+module.exports = app;

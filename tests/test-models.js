@@ -1,11 +1,11 @@
 // test-models.js
-const connectDB = require("./src/config/db");
-const User = require("./src/models/User.model");
-const Student = require("./src/models/Student.model");
-const Manual = require("./src/models/Manual.model");
-const Payment = require("./src/models/Payment.model");
-const Allocation = require("./src/models/Allocation.model");
-const AuditLog = require("./src/models/AuditLog.model");
+const connectDB = require("../src/config/db");
+const User = require("../src/models/User.model");
+const Student = require("../src/models/Student.model");
+const Manual = require("../src/models/Manual.model");
+const Payment = require("../src/models/Payment.model");
+const Allocation = require("../src/models/Allocation.model");
+const AuditLog = require("../src/models/AuditLog.model");
 const mongoose = require("mongoose");
 
 async function runModelTests() {
