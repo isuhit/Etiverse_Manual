@@ -12,7 +12,7 @@ const manualSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      uppercase: true, // Normalizes course codes (e.g., 'inf121' -> 'INF121')
+      uppercase: true, 
     },
     courseDescription: {
       type: String,
@@ -24,11 +24,17 @@ const manualSchema = new mongoose.Schema(
       required: true,
       min: [0, "Price cannot be negative"],
     },
+    quantityObtained: {
+      type: Number,
+      required: true,
+      min: [0, "Quantity obtained cannot be negative"],
+      default: 0,
+    },
     quantityInStock: {
       type: Number,
       required: true,
       min: [0, "Quantity cannot be negative"],
-      default: 0, // Tracks total physical stock in hand
+      default: 0, 
     },
     isActive: {
       type: Boolean,
@@ -36,7 +42,7 @@ const manualSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Manual", manualSchema);

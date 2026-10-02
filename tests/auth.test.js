@@ -77,7 +77,7 @@ async function runAuthTests() {
     console.error('❌ Execution Error:', error);
   } finally {
     // Clean up and disconnect cleanly
-    await User.deleteMany({ username: { $in: ['test_active', 'test_inactive'] } });
+    // await User.deleteMany({ username: { $in: ['test_active', 'test_inactive'] } });
     await mongoose.disconnect();
     process.exit(0);
   }

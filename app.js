@@ -7,6 +7,8 @@ app.use(express.json());
 //ROUTES
 const authRoutes = require("./src/routes/auth.routes");
 const studentRoutes = require("./src/routes/student.route");
+const manualRoutes = require("./src/routes/manual.route");
+
 
 app.get("/health", (req, res) => {
   console.log(req.headers);
@@ -16,8 +18,9 @@ app.get("/health", (req, res) => {
     response: "Server is running",
   });
 });
-app.use("/api/v1/students", studentRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/students", studentRoutes);
+app.use("/api/v1/manuals", manualRoutes);
 
 app.use(errorMiddleware);
 module.exports = app;
