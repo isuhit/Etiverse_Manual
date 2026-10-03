@@ -7,7 +7,11 @@ const getAllStudents = async (validQuery) => {
 
   if (regNumber) {
     filter.regNumber = regNumber;
+<<<<<<< HEAD
     skip = 0;
+=======
+    skip = 0; // Reset skip to 0 if regNumber is provided
+>>>>>>> f6208a6aa99d9bd6cd53abe313e459bc57dc58fa
   }
 
   const totalStudent = await Student.countDocuments(filter);
