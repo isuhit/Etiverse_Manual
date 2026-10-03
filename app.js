@@ -10,6 +10,7 @@ const studentRoutes = require("./src/routes/student.routes");
 const manualRoutes = require("./src/routes/manual.routes");
 const paymentRoutes = require("./src/routes/payment.routes");
 
+
 app.get("/health", (req, res) => {
   console.log(req.headers);
   res.json({
@@ -18,10 +19,13 @@ app.get("/health", (req, res) => {
     response: "Server is running",
   });
 });
+
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/students", studentRoutes);
 app.use("/api/v1/manuals", manualRoutes);
 app.use("/api/v1/payments", paymentRoutes);
+
+
 
 app.use(errorMiddleware);
 module.exports = app;
