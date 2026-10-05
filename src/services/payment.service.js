@@ -2,6 +2,8 @@ const Payment = require("../models/Payment.model");
 const Student = require("../models/Student.model");
 const Manual = require("../models/Manual.model");
 const AppError = require("../utils/AppError");
+const mongoose = require("mongoose");
+const AuditLog = require("../models/AuditLog.model");
 
 const createPayment = async (paymentData) => {
   const { regNumber, manual, amount, transactionId, evidenceUrl } = paymentData;
@@ -100,7 +102,117 @@ const getPaymentById = async (paymentId) => {
   };
 };
 
+const verifyPayment = async (paymentId, userId) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const updatedPayment = await Payment.findOneAndUpdate(
+      { _id: paymentId, status: "PENDING" },
+      { status: "VERIFIED", verifiedBy: userId, verifiedAt: new Date() },
+      {  returnDocument: "after", session },
+    )
+      .populate("student", "regNumber")
+      .populate("manual", "title")
+      .lean();
+
+    if (!updatedPayment) {
+      throw new AppError(
+        `Payment is not found or is not in PENDING status.`,
+        409,
+      );
+    }
+    await AuditLog.create(
+      [
+        {
+          actor: userId,
+          action: "PAYMENT_VERIFIED",
+          entity: "Payment",
+          entityId: paymentId,
+          metadata: {
+            studentRegNumber: updatedPayment.student.regNumber,
+            manualTitle: updatedPayment.manual.title,
+            amount: updatedPayment.amount,
+          },
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+    return updatedPayment;
+  } catch (err) {
+    await session.abortTransaction();
+    if (err instanceof AppError) {
+      throw err;
+    } else {
+      console.error("Error verifying payment:", err);
+      throw new AppError("Failed to verify payment.", 500);
+    }
+  } finally {
+    await session.endSession();
+  }
+};
+
+const rejectPayment = async (paymentId, userId, rejectionReason) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const updatedPayment = await Payment.findOneAndUpdate(
+      { _id: paymentId, status: "PENDING" },
+      {
+        status: "REJECTED",
+        rejectedBy: userId,
+        rejectedAt: new Date(),
+        rejectionReason,
+      },
+      { returnDocument: "after", session },
+    )
+      .populate("student", "regNumber")
+      .populate("manual", "title")
+      .lean();
+
+    if (!updatedPayment) {
+      throw new AppError(
+        `Payment is not found or is not in PENDING status.`,
+        409,
+      );
+    }
+
+    await AuditLog.create(
+      [
+        {
+          actor: userId,
+          action: "PAYMENT_REJECTED",
+          entity: "Payment",
+          entityId: paymentId,
+          metadata: {
+            studentRegNumber: updatedPayment.student.regNumber,
+            manualTitle: updatedPayment.manual.title,
+            amount: updatedPayment.amount,
+            rejectionReason,
+          },
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+    return updatedPayment;
+  } catch (err) {
+    await session.abortTransaction();
+    if (err instanceof AppError) {
+      throw err;
+    } else {
+      console.error("Error rejecting payment:", err);
+      throw new AppError("Failed to reject payment.", 500);
+    }
+  } finally {
+    await session.endSession();
+  }
+};
 module.exports = {
   createPayment,
   getPaymentById,
+  verifyPayment,
+  rejectPayment,
 };

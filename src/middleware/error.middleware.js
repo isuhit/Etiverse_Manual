@@ -4,7 +4,7 @@ const errorHandler = (err, req, res, next) => {
     err.isOperational = true;
     err.message = "Invalid ID format";
   }
-
+  const statusCode = err.statusCode || 500;
   const response = {
     success: false,
     message: err.isOperational

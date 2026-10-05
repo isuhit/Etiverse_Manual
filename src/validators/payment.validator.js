@@ -16,6 +16,10 @@ const submitPaymentSchema = Joi.object({
     }),
 });
 
+const rejectPaymentSchema = Joi.object({
+  rejectionReason: Joi.string().trim().required(),
+});
 module.exports = {
   submitPaymentSchema,
+  rejectPaymentSchema,
 };
