@@ -9,7 +9,7 @@ const authRoutes = require("./src/routes/auth.routes");
 const studentRoutes = require("./src/routes/student.routes");
 const manualRoutes = require("./src/routes/manual.routes");
 const paymentRoutes = require("./src/routes/payment.routes");
-
+const allocationRoutes = require("./src/routes/allocation.routes");
 
 app.get("/health", (req, res) => {
   console.log(req.headers);
@@ -24,6 +24,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/students", studentRoutes);
 app.use("/api/v1/manuals", manualRoutes);
 app.use("/api/v1/payments", paymentRoutes);
+app.use("/api/v1/allocations", allocationRoutes);
 
 
 
