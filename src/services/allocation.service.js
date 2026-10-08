@@ -1,7 +1,6 @@
 const Manual = require("../models/Manual.model");
 const Payment = require("../models/Payment.model");
 const Allocation = require("../models/Allocation.model");
-const Student = require("../models/Student.model");
 const AuditLog = require("../models/AuditLog.model");
 const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");

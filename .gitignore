@@ -21,3 +21,4 @@ build/
 
 # Development data
 *.csv
+test/
