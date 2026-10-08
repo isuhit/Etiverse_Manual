@@ -1,6 +1,7 @@
 const Manual = require("../models/Manual.model");
 const Payment = require("../models/Payment.model");
 const Allocation = require("../models/Allocation.model");
+const Student = require("../models/Student.model");
 const AuditLog = require("../models/AuditLog.model");
 const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
@@ -137,7 +138,7 @@ const createAllocation = async (manualId, quantity, userId) => {
       student: payment.student,
       manual: payment.manual,
       payment: payment._id,
-      allocatedBy: userId, 
+      allocatedBy: userId,
     }));
 
     const createdAllocations = await Allocation.insertMany(
@@ -177,7 +178,70 @@ const createAllocation = async (manualId, quantity, userId) => {
   }
 };
 
+const collectManual = async (allocationId, userId) => {
+  // 1. Fetch record and run guard checks
+  const allocation = await Allocation.findById(allocationId).lean();
+  if (!allocation) throw new AppError("Allocation does not exist", 404);
+  if (allocation.collectionStatus == "COLLECTED")
+    throw new AppError("Manual already collected", 409);
+
+  // 2. Start transaction for multi-document operations
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const updatedCollection = await Allocation.findOneAndUpdate(
+      {
+        _id: allocationId,
+      },
+      {
+        collectionStatus: "COLLECTED",
+        collectedBy: userId,
+        collectedAt: new Date(),
+      },
+      { returnDocument: "after", session },
+    ).populate([
+      {
+        path: "student",
+        select: "regNumber name",
+      },
+      { path: "manual", select: "courseCode" },
+    ]);
+
+    if (!updatedCollection)
+      throw new AppError("Couldn't update collection", 400);
+
+    // 3. Write Audit Log
+    await AuditLog.create(
+      [
+        {
+          actor: userId,
+          action: "MANUAL_COLLECTED",
+          entity: "Allocation",
+          entityId: allocationId,
+          metadata: {
+            manualId: updatedCollection.manual,
+            name: updatedCollection.student.name,
+            regNumber: updatedCollection.student.regNumber,
+            courseCode: updatedCollection.manual.courseCode,
+          },
+        },
+      ],
+      { session },
+    );
+    await session.commitTransaction();
+    return updatedCollection;
+  } catch (err) {
+    if (session.inTransaction) await session.abortTransaction();
+    if (err instanceof AppError) throw err;
+    throw err;
+  } finally {
+    await session.endSession();
+  }
+};
+
 module.exports = {
   getAllocationCandidates,
   createAllocation,
+  collectManual,
 };

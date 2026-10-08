@@ -1,6 +1,7 @@
 const {
   getAllocationCandidates,
   createAllocation,
+  collectManual,
 } = require("../services/allocation.service");
 const asyncHandler = require("../utils/async-handler");
 
@@ -27,7 +28,22 @@ const createAllocationController = asyncHandler(async (req, res, next) => {
   });
 });
 
+const collectManualController = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const allocationId = req.params.id;
+  const collectedManual = await collectManual(allocationId, userId);
+
+  res
+    .status(201)
+    .json({
+      success: true,
+      data: collectedManual,
+      message: "Manual collected successfully",
+    });
+});
+
 module.exports = {
   getAllocationCandidateController,
   createAllocationController,
+  collectManualController,
 };

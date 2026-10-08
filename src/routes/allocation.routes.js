@@ -2,6 +2,7 @@ const Router = require("express").Router();
 const {
   getAllocationCandidateController,
   createAllocationController,
+  collectManualController,
 } = require("../controllers/allocation.controller");
 const { validate } = require("../middleware/validate.middleware");
 const {
@@ -18,4 +19,5 @@ Router.get(
 );
 Router.post("/", validate(createAllocationSchema, "body"), createAllocationController);
 
+Router.patch("/:id/collect", collectManualController)
 module.exports = Router;
