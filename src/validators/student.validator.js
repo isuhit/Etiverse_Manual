@@ -11,13 +11,14 @@ const studentQuerySchema = Joi.object({
       "string.pattern.base":
         "Registration number format must be '25/CO/IS/007'",
     }),
+  name: Joi.string().trim().optional(),
 
   // Pagination & Sorting
   limit: Joi.number().integer().min(1).max(100).default(20),
   page: Joi.number().integer().min(1).default(1),
   sort: Joi.string()
-    .valid("name", "-name", "createdAt", "-createdAt")
-    .default("-createdAt"),
+    .valid("name", "-name", "createdAt", "-createdAt", "regNumber")
+    .default("regNumber"),
 });
 
 module.exports = { studentQuerySchema };

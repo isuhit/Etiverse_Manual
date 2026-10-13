@@ -2,6 +2,7 @@ const { generateToken } = require("../utils/auth.utils");
 const AsyncHandler = require("../utils/async-handler");
 const { authenticateUser } = require("../services/auth.service");
 const User = require("../models/User.model");
+const AppError = require("../utils/AppError")
 
 const login = AsyncHandler(async (req, res, next) => {
   const { username, password } = req.body;

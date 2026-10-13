@@ -21,4 +21,5 @@ build/
 
 # Development data
 *.csv
-test/
+tests/
+frontend/

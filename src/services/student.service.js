@@ -1,12 +1,17 @@
 const Student = require("../models/Student.model");
 
 const getAllStudents = async (validQuery) => {
-  const { regNumber, page, limit, sort } = validQuery;
+  const { regNumber, name, page, limit, sort } = validQuery;
   let skip = (page - 1) * limit;
   const filter = {};
 
   if (regNumber) {
     filter.regNumber = regNumber;
+    skip = 0;
+  }
+  if (name) {
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    filter.name = { $regex: escapedName, $options: "i" };
     skip = 0;
   }
 
