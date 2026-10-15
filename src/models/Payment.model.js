@@ -60,5 +60,12 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+paymentSchema.index(
+  { student: 1, manual: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: ["PENDING", "VERIFIED"] } },
+  },
+);
 paymentSchema.index({ manual: 1, status: 1, createdAt: 1 });
 module.exports = mongoose.model("Payment", paymentSchema);

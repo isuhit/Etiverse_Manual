@@ -192,6 +192,7 @@ const collectManual = async (allocationId, userId) => {
     const updatedCollection = await Allocation.findOneAndUpdate(
       {
         _id: allocationId,
+        collectionStatus: "NOT COLLECTED"
       },
       {
         collectionStatus: "COLLECTED",
@@ -208,7 +209,7 @@ const collectManual = async (allocationId, userId) => {
     ]);
 
     if (!updatedCollection)
-      throw new AppError("Couldn't update collection", 400);
+      throw new AppError("Couldn't update collection", 409);
 
     // 3. Write Audit Log
     await AuditLog.create(
@@ -231,7 +232,7 @@ const collectManual = async (allocationId, userId) => {
     await session.commitTransaction();
     return updatedCollection;
   } catch (err) {
-    if (session.inTransaction) await session.abortTransaction();
+    if (session.inTransaction()) await session.abortTransaction();
     if (err instanceof AppError) throw err;
     throw err;
   } finally {

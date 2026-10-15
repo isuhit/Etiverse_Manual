@@ -24,7 +24,6 @@ Router.get(
   getStudentPaymentHistoryController,
 );
 Router.post("/", validate(submitPaymentSchema), submitPayment);
-Router.get("/:id", getPaymentByIdController);
 
 // Private Route
 Router.get(
@@ -33,6 +32,7 @@ Router.get(
   validate(paymentsQuerySchema, "query"),
   getAllPaymentController,
 );
+Router.get("/:id",protect, getPaymentByIdController);
 Router.patch(
   "/:id/verify",
   protect,

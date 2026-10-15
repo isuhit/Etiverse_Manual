@@ -23,7 +23,7 @@ Router.get(
 );
 // GET /students/:id
 Router.get(
-  "/:id",
+  "/:id",protect,
   validate(studentIdParamSchema, "params"),
   getStudentByIdController
 );

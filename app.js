@@ -23,7 +23,6 @@ const allocationRoutes = require("./src/routes/allocation.routes");
 const analyticsRoutes = require("./src/routes/analytics.routes");
 
 app.get("/health", (req, res) => {
-  console.log(req.headers);
   res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
