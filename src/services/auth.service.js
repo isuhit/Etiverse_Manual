@@ -7,7 +7,7 @@ const authenticateUser = async (username, password) => {
     throw new AppError("Invalid credential, recheck and try again", 401);
   }
   const isPasswordValid = await user.comparePassword(password);
-  
+
   if (!isPasswordValid) {
     throw new AppError("Invalid credential, recheck and try again", 401);
   }
@@ -18,6 +18,14 @@ const authenticateUser = async (username, password) => {
   return user;
 };
 
+const getAllUsersService = async () => {
+  const users = await User.find()
+    .select("-password -__v")
+    .sort({ createdAt: -1 });
+  return users;
+};
+
 module.exports = {
   authenticateUser,
+  getAllUsersService,
 };

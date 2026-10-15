@@ -1,9 +1,11 @@
 const asyncHandler = require("../utils/async-handler");
 const {
   createPayment,
+  getAllPaymentsService,
   getPaymentById,
   verifyPayment,
   rejectPayment,
+  getStudentPaymentHistoryService,
 } = require("../services/payment.service");
 
 const submitPayment = asyncHandler(async (req, res, next) => {
@@ -21,6 +23,17 @@ const submitPayment = asyncHandler(async (req, res, next) => {
     status: "success",
     data: payment,
     message: "Payment submitted successfully and is pending verification.",
+  });
+});
+
+const getAllPaymentController = asyncHandler(async (req, res, next) => {
+  const validQuery = req.validQuery;
+  const payments = await getAllPaymentsService(validQuery);
+
+  res.status(200).json({
+    success: true,
+    message: "Payments retrieved successfully",
+    data: payments,
   });
 });
 
@@ -65,9 +78,23 @@ const rejectPaymentController = asyncHandler(async (req, res, next) => {
   });
 });
 
+const getStudentPaymentHistoryController = asyncHandler(async (req, res, next) => {
+  const student = req.validQuery.student;
+
+  const payments = await getStudentPaymentHistoryService(student);
+
+  res.status(200).json({
+    success: true,
+    message: "Student payment details retrieved successfully",
+    data: payments,
+  });
+});
+
 module.exports = {
   submitPayment,
+  getAllPaymentController,
   getPaymentByIdController,
   verifyPaymentController,
   rejectPaymentController,
+  getStudentPaymentHistoryController,
 };

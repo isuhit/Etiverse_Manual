@@ -19,7 +19,27 @@ const submitPaymentSchema = Joi.object({
 const rejectPaymentSchema = Joi.object({
   rejectionReason: Joi.string().trim().required(),
 });
+
+const studentPaymentHistorySchema = Joi.object({
+  student: Joi.string().trim().hex().length(24).required().messages({
+    "string.empty": "student is required",
+    "any.required": "student is required",
+  }),
+});
+
+const paymentsQuerySchema = Joi.object({
+  //Filtering
+  status: Joi.string().trim().uppercase().optional(),
+
+  // Sorting and Pagination
+  limit: Joi.number().integer().min(1).max(100).default(20),
+  page: Joi.number().integer().min(1).default(1),
+  sort: Joi.string(),
+});
+
 module.exports = {
   submitPaymentSchema,
   rejectPaymentSchema,
+  studentPaymentHistorySchema,
+  paymentsQuerySchema
 };

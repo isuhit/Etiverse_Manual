@@ -1,8 +1,11 @@
 const { generateToken } = require("../utils/auth.utils");
 const AsyncHandler = require("../utils/async-handler");
-const { authenticateUser } = require("../services/auth.service");
+const {
+  authenticateUser,
+  getAllUsersService,
+} = require("../services/auth.service");
 const User = require("../models/User.model");
-const AppError = require("../utils/AppError")
+const AppError = require("../utils/AppError");
 
 const login = AsyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
@@ -65,4 +68,14 @@ const createUser = AsyncHandler(async (req, res, next) => {
   });
 });
 
-module.exports = { login, me, createUser };
+const getAllUsersController = AsyncHandler(async (req, res) => {
+  const users = await getAllUsersService();
+
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    data:  users ,
+  });
+});
+
+module.exports = { login, me, createUser, getAllUsersController };

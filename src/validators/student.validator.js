@@ -21,4 +21,27 @@ const studentQuerySchema = Joi.object({
     .default("regNumber"),
 });
 
-module.exports = { studentQuerySchema };
+const studentLookupSchema = Joi.object({
+  regNumber: Joi.string()
+    .trim()
+    .uppercase()
+    .required()
+    .pattern(/^\d{2}\/[A-Z]{2}\/[A-Z]{2}\/\d+$/)
+    .messages({
+      "string.pattern.base":
+        "Registration number format must be '25/CO/IS/007'",
+      "any.required": "Registration number is required for lookup",
+      "string.empty": "Registration number cannot be empty",
+    }),
+});
+
+// Validates URL parameter for GET /students/:id
+const studentIdParamSchema = Joi.object({
+  id: Joi.string().trim().hex().length(24).required().messages({
+    "string.hex": "Student ID must be a valid 24-character hexadecimal ObjectId",
+    "string.length": "Student ID must be exactly 24 characters long",
+    "any.required": "Student ID parameter is required",
+  }),
+});
+
+module.exports = { studentQuerySchema, studentLookupSchema, studentIdParamSchema };

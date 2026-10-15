@@ -239,8 +239,59 @@ const collectManual = async (allocationId, userId) => {
   }
 };
 
+const getStudentAllocationService = async (student) => {
+  const Allocations = await Allocation.find({ student }).populate(
+    "manual",
+    "title courseCode price",
+  );
+
+  return Allocations;
+};
+
+const getAllAllocationService = async (validQuery) => {
+  const { collectionStatus, limit, page, sort } = validQuery;
+  const skip = (page - 1) * limit;
+  const filter = {};
+  if (collectionStatus) filter.collectionStatus = collectionStatus;
+
+  const [allocationCount, allocations] = await Promise.all([
+    Allocation.countDocuments(filter),
+    Allocation.find(filter, { __v: 0 })
+      .skip(skip)
+      .limit(limit)
+      .sort(sort)
+      .populate("manual", "title courseCode price")
+      .populate("student", "name regNumber")
+      .populate("allocatedBy", "name role"),
+  ]);
+
+  return {
+    allocations,
+    total: allocationCount,
+    page,
+    limit,
+    pages: Math.ceil(allocationCount / limit),
+    size: allocations.length,
+  };
+};
+
+const getAllocationByIdService = async (id) => {
+  const allocation = await Allocation.findById(id)
+    .populate("manual", "title courseCode price")
+    .populate("student", "name regNumber")
+    .populate("allocatedBy", "name role")
+    .lean();
+  if (!allocation)
+    throw new AppError("No allocation record found with that ID", 404);
+
+  return allocation;
+};
+
 module.exports = {
   getAllocationCandidates,
   createAllocation,
   collectManual,
+  getStudentAllocationService,
+  getAllAllocationService,
+  getAllocationByIdService,
 };

@@ -22,6 +22,9 @@ const createPayment = async (paymentData) => {
   if (!manualDoc) {
     throw new AppError(`Manual with ID ${manual} not found.`, 404);
   }
+  if (manualDoc.isActive == false) {
+    throw new AppError(`Manual with ID ${manual} is not active.`, 409);
+  }
 
   // Check if the amount is valid
   if (amount < manualDoc.price) {
@@ -76,6 +79,33 @@ const createPayment = async (paymentData) => {
   };
 };
 
+const getAllPaymentsService = async (validQuery) => {
+  const { status, page, limit, sort } = validQuery;
+  const skip = (page - 1) * limit;
+  const filter = {};
+
+  if (status) filter.status = status;
+
+  const [totalPayments, payments] = await Promise.all([
+    Payment.countDocuments(filter),
+    Payment.find(filter, { __v: 0 })
+      .skip(skip)
+      .limit(limit)
+      .sort(sort)
+      .populate("manual", "title courseCode price")
+      .populate("student", "name regNumber"),
+  ]);
+
+  return {
+    payments,
+    total: totalPayments,
+    page,
+    limit,
+    pages: Math.ceil(totalPayments / limit),
+    size: payments.length,
+  };
+};
+
 const getPaymentById = async (paymentId) => {
   const payment = await Payment.findById(paymentId)
     .populate("student", "regNumber name")
@@ -109,7 +139,7 @@ const verifyPayment = async (paymentId, userId) => {
     const updatedPayment = await Payment.findOneAndUpdate(
       { _id: paymentId, status: "PENDING" },
       { status: "VERIFIED", verifiedBy: userId, verifiedAt: new Date() },
-      {  returnDocument: "after", session },
+      { returnDocument: "after", session },
     )
       .populate("student", "regNumber")
       .populate("manual", "title")
@@ -210,9 +240,23 @@ const rejectPayment = async (paymentId, userId, rejectionReason) => {
     await session.endSession();
   }
 };
+
+const getStudentPaymentHistoryService = async (student) => {
+  const payments = await Payment.find({ student }).populate(
+    "manual",
+    "title courseCode price",
+  );
+
+  if (!payments) throw new AppError("Student has no payments", 404);
+
+  return payments;
+};
+
 module.exports = {
   createPayment,
+  getAllPaymentsService,
   getPaymentById,
   verifyPayment,
   rejectPayment,
+  getStudentPaymentHistoryService,
 };
