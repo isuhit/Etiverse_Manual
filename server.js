@@ -7,6 +7,6 @@ const PORT = config.port;
 
 connectDB().then(() => {
     app.listen(PORT, (response) => {
-        console.log(`Server running on port ${port}`);
+        console.log(`Server running on port ${PORT}`);
     });
 });
