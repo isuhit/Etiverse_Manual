@@ -24,12 +24,12 @@ Router.get(
 
 Router.use(protect, restrictTo("ADMIN", "ASSISTANT"));
 Router.get("/", validate(allocationsQuerySchema, "query"), getAllAllocationsController);
-Router.get("/:id",validate(allocationParamSchema, "params"), getAllocationByIdController)
 Router.get(
   "/candidates",
   validate(allocationCandidateSchema, "query"),
   getAllocationCandidateController,
 );
+Router.get("/:id",validate(allocationParamSchema, "params"), getAllocationByIdController)
 Router.post(
   "/",
   validate(createAllocationSchema, "body"),
