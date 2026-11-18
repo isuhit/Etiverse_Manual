@@ -1,5 +1,13 @@
 const Joi = require('joi');
 
+const cloudinaryImageUrl = Joi.string()
+  .uri({ scheme: ['https'] })
+  .pattern(/^https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\//)
+  .messages({
+    'string.uri': 'Cover image URL must be a valid HTTPS URL',
+    'string.pattern.base': 'Cover image URL must be a Cloudinary image URL',
+  });
+
 const manualSchema = Joi.object({
   title: Joi.string().trim().required().messages({
     'string.empty': 'Title is required',
@@ -13,6 +21,7 @@ const manualSchema = Joi.object({
     'string.empty': 'Course description is required',
     'any.required': 'Course description is required',
   }),
+  coverImageUrl: cloudinaryImageUrl.optional(),
   price: Joi.number().min(0).required().messages({
     'number.min': 'Price cannot be negative',
     'any.required': 'Price is required',
@@ -28,6 +37,7 @@ const patchManualSchema = Joi.object({
   title: Joi.string().trim().optional(),
   courseCode: Joi.string().trim().uppercase().optional(),
   courseDescription: Joi.string().trim().optional(),
+  coverImageUrl: cloudinaryImageUrl.optional(),
   price: Joi.number().min(0).optional().messages({
     'number.min': 'Price cannot be negative',
   }),

@@ -19,6 +19,11 @@ const manualSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    coverImageUrl: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     price: {
       type: Number,
       required: true,

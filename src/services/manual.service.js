@@ -1,13 +1,14 @@
 const Manual = require("../models/Manual.model");
 const AppError = require("../utils/AppError");
 const AuditLog = require("../models/AuditLog.model");
-const Mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const createManual = async (manualData) => {
   const {
     title,
     courseCode,
     courseDescription,
+    coverImageUrl,
     price,
     quantityObtained,
     isActive,
@@ -30,6 +31,7 @@ const createManual = async (manualData) => {
     title,
     courseCode: courseCode.toUpperCase(), // Normalize to uppercase
     courseDescription,
+    coverImageUrl,
     price,
     quantityObtained,
     quantityInStock: quantityObtained,
@@ -72,7 +74,7 @@ const getManualById = async (manualId) => {
 };
 
 const updateManual = async (manualId, updateData, userId) => {
-  const { title, courseDescription, courseCode, price, addStock, isActive } =
+  const { title, courseDescription, courseCode, coverImageUrl, price, addStock, isActive } =
     updateData;
 
   const session = await mongoose.startSession();
@@ -97,6 +99,10 @@ const updateManual = async (manualId, updateData, userId) => {
           courseDescription !== undefined
             ? courseDescription
             : manual.courseDescription,
+        coverImageUrl:
+          coverImageUrl !== undefined
+            ? coverImageUrl
+            : manual.coverImageUrl,
         courseCode:
           courseCode !== undefined
             ? courseCode.toUpperCase()
