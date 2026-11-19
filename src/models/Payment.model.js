@@ -19,8 +19,6 @@ const paymentSchema = new mongoose.Schema(
     },
     transactionId: {
       type: String,
-      required: true,
-      unique: true,
       trim: true,
     },
     evidenceUrl: {
@@ -60,6 +58,15 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Only index actual transaction IDs. A plain unique index treats missing values
+// as the same null value, allowing just one payment without a transaction ID.
+paymentSchema.index(
+  { transactionId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { transactionId: { $type: "string" } },
+  },
+);
 paymentSchema.index(
   { student: 1, manual: 1 },
   {

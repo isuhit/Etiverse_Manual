@@ -35,13 +35,13 @@ const createPayment = async (paymentData) => {
   }
 
   // Check if the transaction ID is unique
-  const existingTransactionId = await Payment.findOne({ transactionId });
-  if (existingTransactionId) {
-    throw new AppError(
-      `Payment with transaction ID ${transactionId} already exists.`,
-      409,
-    );
-  }
+  // const existingTransactionId = await Payment.findOne({ transactionId });
+  // if (existingTransactionId) {
+  //   throw new AppError(
+  //     `Payment with transaction ID ${transactionId} already exists.`,
+  //     409,
+  //   );
+  // }
 
   // Check if student has already made a payment for the same manual
   const existingPaymentForManual = await Payment.exists({
@@ -61,7 +61,7 @@ const createPayment = async (paymentData) => {
     student: student._id,
     manual: manualDoc._id,
     amount,
-    transactionId,
+    ...(transactionId && { transactionId }),
     evidenceUrl,
     status: "PENDING",
   });
