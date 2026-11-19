@@ -4,7 +4,7 @@ const submitPaymentSchema = Joi.object({
   regNumber: Joi.string().required().uppercase(),
   manual: Joi.string().required(),
   amount: Joi.number().min(1).required(),
-  transactionId: Joi.string().trim().required().uppercase(),
+  transactionId: Joi.string().trim().uppercase(),
   evidenceUrl: Joi.string()
     .trim()
     .uri({ scheme: ["https"] })
